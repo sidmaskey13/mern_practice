@@ -3,6 +3,13 @@ const userSchema = require('./userSchema')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwtKey = process.env.JWT_PRIVATE_KEY
+const crypto = require('crypto');
+
+const CLIENT_ID = process.env.CLIENT_ID
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(CLIENT_ID);
+const otherHelper = require('../../helper/other.helper');
+
 const userController = {};
 
 userController.register = async (req, res, next) => {
@@ -43,6 +50,40 @@ userController.login = async (req, res, next) => {
     }
 };
 
+
+
+userController.googleLogin = async (req, res, next) => {
+    let token = req.body.token;
+    async function verify() {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const userid = payload['sub'];
+
+        const { name, email } = payload
+        console.log(email)
+        const randomHex = await otherHelper.generateRandomHexString(10);
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(randomHex, salt)
+        let user = await userSchema.findOne({ email })
+        if (!user) {
+            user = new userSchema({
+                name,
+                email,
+                password: hashPassword,
+            })
+            await user.save()
+        }
+        // res.header('x-auth-token', token).send({ email, name, token })
+
+    }
+    verify().then(() => {
+        res.cookie('session-token', token);
+        res.send({ status: 'success' })
+    }).catch(console.error)
+};
 
 function generateAuthToken() {
     const token = jwt.sign({ _id: this.id, isAdmin: this.isAdmin }, jwtKey);

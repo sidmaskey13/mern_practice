@@ -2,6 +2,7 @@ import { fetchPostSuccess, fetchPostError, savePostSuccess, savePostError, delet
 
 import axios from 'axios';
 import { notificationError, notificationSuccess } from "../notification/action";
+import { mainUrl } from "../../App";
 
 const ROOT_URL = "http://localhost:4000/api/post";
 const config = {

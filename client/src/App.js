@@ -1,21 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import ListTable from './components/ListTable';
-import ListForm from './components/ListForm';
-import Notifications from './components/Notifications';
+import React, { Component, Fragment } from 'react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+
 import '../node_modules/noty/lib/noty.css'
 import '../node_modules/noty/lib/themes/bootstrap-v4.css'
+import './App.css';
+
+import PrivateRoute from './components/layout/PrivateRoute'
+import Dashboard from './components/layout/Dashboard'
+
+import Notifications from './components/layout/Notifications';
+import Header from './components/layout/Header';
+import Login from './components/Auth/Login';
+import PostList from './components/Post/PostList';
+export const MAIN_URL = "http://localhost:4000/api"
 
 function App() {
   return (
-    <div className="container">
-      <h1>Post</h1>
+    <Router>
+      <Header />
       <Notifications />
-      <ListForm />
-      <hr />
-      <ListTable />
-    </div>
+      <div className="container">
+        <Switch>
+          <Route exact path="/" component={PostList} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Login} />
+          <PrivateRoute exact path="/dashboard" component={Dashboard} />
+        </Switch>
+      </div>
+    </Router>
+
   );
 }
 

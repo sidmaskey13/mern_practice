@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPosts, deletePost } from '../redux/post/api'
-import { deletePostSuccess, getUpdateIndexSuccess } from '../redux/post/action'
+
 import { Icon, Label, Menu, Table, List, Header, Button } from 'semantic-ui-react'
+import { getUpdateIndexSuccess, deletePostSuccess } from '../../redux/post/action';
+import { fetchPosts, deletePost } from '../../redux/post/api';
 
 
 function ListTable() {

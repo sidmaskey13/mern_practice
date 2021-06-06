@@ -71,7 +71,6 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, singlePost: state.singlePost, currentIndex: action.payload }
 
         case GET_UPDATE_TABLE_SUCCESS:
-            // [...state.postList] = action.payload
             state.postList[state.currentIndex] = action.payload
             return { ...state, currentIndex: -1 }
 

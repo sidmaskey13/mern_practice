@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { savePostSuccess, updatePostSuccess } from "../redux/post/action";
-import { addPost, editPost } from "../redux/post/api";
+import { savePostSuccess, updatePostSuccess } from "../../redux/post/action";
+import { addPost, editPost } from "../../redux/post/api";
 import { Form, Button } from 'semantic-ui-react'
 
 

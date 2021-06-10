@@ -4,7 +4,8 @@ import {
 
 let INITIAL_STATE = {
     token: localStorage.getItem('token'),
-    isAuthenticated: null,
+    isAuthenticated: localStorage.getItem('token') ? true : false,
+    user: null
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -13,7 +14,9 @@ export default function (state = INITIAL_STATE, action) {
             localStorage.setItem('token', action.payload.token);
             return {
                 ...state,
+                token: action.payload.token,
                 isAuthenticated: true,
+                user: action.payload
             };
         case LOGOUT_SUCCESS:
             localStorage.removeItem('token')
@@ -21,6 +24,15 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 token: null,
                 isAuthenticated: false,
+                user: null
+            };
+        case LOGIN_FAIL:
+            localStorage.removeItem('token')
+            return {
+                ...state,
+                token: null,
+                isAuthenticated: false,
+                user: null
             };
         default: return state;
     }

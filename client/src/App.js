@@ -10,9 +10,11 @@ import Dashboard from './components/layout/Dashboard'
 
 import Notifications from './components/layout/Notifications';
 import Header from './components/layout/Header';
-import Login from './components/Auth/Login';
+import Login from './components/auth/Login';
 import PostList from './components/Post/PostList';
-export const MAIN_URL = "http://localhost:4000/api"
+import Homepage from './components/layout/Homepage';
+
+export const SERVER_URL = "http://localhost:4000/api";
 
 function App() {
   return (
@@ -21,7 +23,7 @@ function App() {
       <Notifications />
       <div className="container">
         <Switch>
-          <Route exact path="/" component={PostList} />
+          <Route exact path="/" component={Homepage} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Login} />
           <PrivateRoute exact path="/dashboard" component={Dashboard} />

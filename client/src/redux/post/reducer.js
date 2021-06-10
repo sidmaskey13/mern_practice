@@ -7,26 +7,40 @@ import {
     DELETE_POST_ERROR,
     UPDATE_POST_SUCCESS,
     GET_UPDATE_INDEX_SUCCESS,
-    GET_UPDATE_TABLE_SUCCESS
+    GET_UPDATE_TABLE_SUCCESS,
+    CLEAR_POST,
+    FETCH_POST_ACTIVE_SUCCESS
 } from './types'
-
-// const INITIAL_STATE = { all: [], successMessage: "Success Message", errorMessage: "Error Message" }
 
 let INITIAL_STATE = {
     currentIndex: -1,
     postList: [],
-    singlePost: {}
+    singlePost: {},
+    totalData: 0
 }
 
 export default function (state = INITIAL_STATE, action) {
     var list = JSON.parse(localStorage.getItem('listData'))
 
     switch (action.type) {
-        case FETCH_POST_SUCCESS:
+        case CLEAR_POST:
+            return {
+                ...state,
+                currentIndex: -1, singlePost: INITIAL_STATE.singlePost
+            }
+        case FETCH_POST_ACTIVE_SUCCESS:
             return {
                 ...state,
                 postList: action.payload.data,
                 successMessage: action.message
+            }
+
+        case FETCH_POST_SUCCESS:
+            return {
+                ...state,
+                postList: action.payload.data,
+                totalData: action.payload.totalData,
+                successMessage: action.message,
             }
 
         case FETCH_POST_ERROR:
@@ -37,7 +51,7 @@ export default function (state = INITIAL_STATE, action) {
 
         case SAVE_POST_SUCCESS:
             return {
-                postList: [...state.postList, action.payload],
+                postList: [action.payload, ...state.postList],
                 currentIndex: -1
             }
 
@@ -71,8 +85,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, singlePost: state.singlePost, currentIndex: action.payload }
 
         case GET_UPDATE_TABLE_SUCCESS:
-            state.postList[state.currentIndex] = action.payload
-            return { ...state, currentIndex: -1 }
+            state.postList.splice(state.currentIndex, 1)
+            return { ...state, postList: [action.payload, ...state.postList], currentIndex: -1 }
 
 
 

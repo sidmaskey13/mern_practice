@@ -2,23 +2,23 @@ import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from 'semantic-ui-react'
-import { logOut } from "../../redux/auth/action";
+import { logOut } from "../../redux/auth/api";
 
 
 function Header() {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+    const user = useSelector(state => state.auth.user)
     const dispatch = useDispatch()
 
     const handleLogout = () => {
         dispatch(logOut())
-        // alert('logout')
     }
     const guestLink = (
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav">
-                <li className="nav-item">
+                {/* <li className="nav-item">
                     <Link className="nav-link" to="/">Home</Link>
-                </li>
+                </li> */}
                 <li className="nav-item">
                     <Link className="nav-link" to="/counter">Counter</Link>
                 </li>
@@ -27,6 +27,7 @@ function Header() {
                 </li>
             </ul>
             <ul className="navbar-nav my-2 ml-auto">
+
                 <li className="nav-item">
                     <Link className="nav-link" to="/register">Register</Link>
                 </li>
@@ -47,7 +48,7 @@ function Header() {
             </ul>
             <ul className="navbar-nav my-2 ml-auto">
                 <span className="navbar-text mr-3">
-                    {/* <strong>{user ? `Welcome ${user.username}` : ""}</strong> */}
+                    <strong>{user ? `Welcome ${user.name}` : ""}</strong>
                 </span>
                 <Button onClick={handleLogout}>Logout</Button>
 
@@ -58,7 +59,7 @@ function Header() {
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <a className="navbar-brand" href="#">BoilerPlate</a>
+                <a className="navbar-brand" href="#"><Link className="nav-link" to="/">BoilerPlate</Link></a>
                 {isAuthenticated ? authLink : guestLink}
             </nav>
         </div>

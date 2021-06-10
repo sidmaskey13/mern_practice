@@ -34,17 +34,19 @@ userController.register = async (req, res, next) => {
 
 userController.login = async (req, res, next) => {
     try {
-        userSchema.findOne({ email: req.body.email }).then(data => {
-            bcrypt.compare(req.body.password, data.password, function (err, result) {
-                if (result == true) {
-                    jwt.sign({ data }, jwtKey, { expiresIn: '500s' }, (err, token) => {
-                        res.status(200).json({ name: data.name, email: data.email, token: token })
-                    })
-                } else {
-                    res.send('Incorrect password')
-                }
-            })
-        }).catch(err => { console.log(err); res.status(404).json({ message: 'Email not found' }) })
+        const user = await userSchema.findOne({ email: req.body.email }).lean()
+        if (user) {
+            const result = await bcrypt.compare(req.body.password, user.password)
+            if (result == true) {
+                jwt.sign({ user }, jwtKey, { expiresIn: '86400s' }, (err, token) => {
+                    res.status(200).json({ name: user.name, email: user.email, token: token })
+                })
+            } else {
+                res.send('Incorrect password')
+            }
+        } else {
+            res.status(404).json({ message: 'Email not found' })
+        }
     } catch (error) {
         next(error);
     }
@@ -86,7 +88,7 @@ userController.googleLogin = async (req, res, next) => {
 };
 
 function generateAuthToken() {
-    const token = jwt.sign({ _id: this.id, isAdmin: this.isAdmin }, jwtKey);
+    const token = jwt.sign({ _id: this.id, email: this.email }, jwtKey);
     return token;
 }
 

@@ -1,3 +1,5 @@
+export const CLEAR_POST = 'clear_post'
+export const FETCH_POST_ACTIVE_SUCCESS = 'fetch_post_active_success'
 export const FETCH_POST_SUCCESS = 'fetch_post_success'
 export const FETCH_POST_ERROR = 'fetch_post_error'
 export const SAVE_POST_SUCCESS = 'save_post_success'

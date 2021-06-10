@@ -1,21 +1,22 @@
-import { fetchPostSuccess, fetchPostError, savePostSuccess, savePostError, deletePostSuccess, deletePostError, updateTableSuccess } from './action'
+import { fetchPostSuccess, fetchPostError, savePostSuccess, savePostError, deletePostSuccess, deletePostError, updateTableSuccess, fetchActivePostSuccess } from './action'
 
 import axios from 'axios';
-import { notificationError, notificationSuccess } from "../notification/action";
-import { mainUrl } from "../../App";
+import { tokenConfig } from "../auth/api";
 
-const ROOT_URL = "http://localhost:4000/api/post";
+import { notificationError, notificationSuccess } from "../notification/action";
+import { SERVER_URL } from "../../App";
+
 const config = {
     headers: {
         'Content-Type': 'application/json'
     }
 };
 
-export const fetchPosts = () => dispatch => {
-    axios.get(ROOT_URL)
+export const fetchPosts = (page) => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post?page=" + page, tokenConfig(getState))
         .then(res => {
-            dispatch(fetchPostSuccess(res))
-            dispatch(notificationSuccess('Posts Successfully Retrieved'))
+            dispatch(fetchPostSuccess(res.data))
+            dispatch(notificationSuccess(res.data.message))
         }
         ).catch(err => {
             console.log(err)
@@ -25,11 +26,24 @@ export const fetchPosts = () => dispatch => {
         })
 }
 
-export const addPost = (data) => (dispatch, getState) => {
-    axios.post(ROOT_URL, data, config)
+export const fetchActivePosts = () => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post/homepage/active")
         .then(res => {
-            dispatch(savePostSuccess(res.data))
-            dispatch(notificationSuccess('Post Successfully Added'))
+            dispatch(fetchActivePostSuccess(res.data))
+            dispatch(notificationSuccess(res.data.message))
+        }
+        ).catch(err => {
+            console.log(err)
+            dispatch(notificationError(err.toString()))
+        })
+}
+
+export const addPost = (data) => (dispatch, getState) => {
+    axios.post(SERVER_URL + "/post", data, tokenConfig(getState))
+        .then(res => {
+            console.log(res.data.data)
+            dispatch(savePostSuccess(res.data.data))
+            dispatch(notificationSuccess(res.data.message))
         }
         ).catch(err => {
             dispatch(savePostError(err.toString()));
@@ -38,10 +52,10 @@ export const addPost = (data) => (dispatch, getState) => {
 };
 
 export const editPost = (data) => (dispatch, getState) => {
-    axios.post(ROOT_URL, data, config)
+    axios.post(SERVER_URL + "/post", data, tokenConfig(getState))
         .then(res => {
-            dispatch(updateTableSuccess(res.data))
-            dispatch(notificationSuccess('Post Successfully Updated!!!!!!'))
+            dispatch(updateTableSuccess(res.data.data))
+            dispatch(notificationSuccess(res.data.message))
         }
         ).catch(err => {
             dispatch(savePostError(err.toString()));
@@ -50,10 +64,10 @@ export const editPost = (data) => (dispatch, getState) => {
 };
 
 export const deletePost = (id) => (dispatch, getState) => {
-    axios.delete(ROOT_URL + '/' + id)
+    axios.delete(SERVER_URL + "/post" + '/' + id, tokenConfig(getState))
         .then(res => {
             dispatch(deletePostSuccess(id))
-            dispatch(notificationSuccess('Post Successfully Deleted'))
+            dispatch(notificationSuccess(res.data.message))
         }
         ).catch(err => {
             dispatch(deletePostError(err.toString()));

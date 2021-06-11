@@ -1,4 +1,4 @@
-import { SUCCESS_NOTIFY, ERROR_NOTIFY } from "./types"
+import { SUCCESS_NOTIFY, ERROR_NOTIFY, CLEAR_MESSAGE } from "./types"
 
 export const notificationSuccess = (response) => {
     return {
@@ -13,3 +13,11 @@ export const notificationError = (response) => {
         payload: response
     }
 }
+
+export const clearErrorMessage = () => {
+    return {
+        type: CLEAR_MESSAGE,
+    }
+}
+
+

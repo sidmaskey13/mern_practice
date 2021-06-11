@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ListTable from './ListTable';
 import ListForm from './ListForm';
 
-function PostList() {
+function BloggerDashboard() {
     return (
         <div>
             <h1>Posts</h1>
@@ -14,4 +14,4 @@ function PostList() {
         </div>
     )
 }
-export default PostList;
+export default BloggerDashboard;

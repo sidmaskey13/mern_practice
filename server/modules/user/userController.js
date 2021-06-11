@@ -14,7 +14,7 @@ const userController = {};
 
 userController.register = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body
+        const { name, email, password, userType } = req.body
         const salt = await bcrypt.genSalt(10)
         const hashPassword = await bcrypt.hash(password, salt)
         let user = await userSchema.findOne({ email })
@@ -22,11 +22,12 @@ userController.register = async (req, res, next) => {
         user = new userSchema({
             name,
             email,
+            userType,
             password: hashPassword,
         })
         await user.save()
         const token = generateAuthToken();
-        res.header('x-auth-token', token).send({ email, name, token })
+        res.header('x-auth-token', token).send({ email, name, userType, token })
     } catch (error) {
         next(error);
     }
@@ -39,13 +40,13 @@ userController.login = async (req, res, next) => {
             const result = await bcrypt.compare(req.body.password, user.password)
             if (result == true) {
                 jwt.sign({ user }, jwtKey, { expiresIn: '86400s' }, (err, token) => {
-                    res.status(200).json({ name: user.name, email: user.email, token: token })
+                    res.status(200).json({ name: user.name, email: user.email, token: token, userType: user.userType })
                 })
             } else {
-                res.send('Incorrect password')
+                return otherHelper.sendResponse(res, httpStatus.UNAUTHORIZED, true, null, 'Incorrect password', 'Incorrect password', null);
             }
         } else {
-            res.status(404).json({ message: 'Email not found' })
+            return otherHelper.sendResponse(res, httpStatus.NOT_FOUND, true, null, 'Email Not Found', 'Email Not Found', null);
         }
     } catch (error) {
         next(error);
@@ -86,6 +87,27 @@ userController.googleLogin = async (req, res, next) => {
         res.send({ status: 'success' })
     }).catch(console.error)
 };
+
+userController.allUsers = async (req, res, next) => {
+    try {
+        const users = await userSchema.find().select('name email userType').lean()
+        return otherHelper.sendResponse(res, httpStatus.OK, true, users, null, 'All Users Retrieved', null);
+    } catch (error) {
+        next(error);
+    }
+};
+
+userController.loadLoggedInUser = async (req, res, next) => {
+    try {
+        const user_id = req.user.user._id
+        const user = await userSchema.findById(user_id).select('_id name email userType').lean()
+        return otherHelper.sendResponse(res, httpStatus.OK, true, user, null, 'Login User detail', null);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
 function generateAuthToken() {
     const token = jwt.sign({ _id: this.id, email: this.email }, jwtKey);

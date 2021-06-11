@@ -4,11 +4,26 @@ const otherHelper = require('../../helper/other.helper');
 
 const postController = {};
 
-postController.get = async (req, res, next) => {
+postController.getAll = async (req, res, next) => {
     try {
-        let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req, 10);
+        let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req);
         sortQuery = { createdAt: -1 }
-        populate = [{ path: 'category', select: 'title' }]
+        populate = [{ path: 'category', select: 'title' }, { path: 'user', select: 'name' }]
+        let post = await otherHelper.getQuerySendResponse(postSchema, page, size, sortQuery, searchQuery, selectQuery, next, populate);
+        return otherHelper.paginationSendResponse(res, httpStatus.OK, true, post.data, 'All Post Retrieved', page, size, post.totalData);
+    } catch (error) {
+        next(error);
+    }
+};
+
+postController.getOwn = async (req, res, next) => {
+    try {
+        let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req);
+        const user_id = req.user.user._id
+        searchQuery = { user: user_id }
+        sortQuery = { createdAt: -1 }
+
+        populate = [{ path: 'category', select: 'title' }, { path: 'user', select: 'name' }]
         let post = await otherHelper.getQuerySendResponse(postSchema, page, size, sortQuery, searchQuery, selectQuery, next, populate);
         return otherHelper.paginationSendResponse(res, httpStatus.OK, true, post.data, 'All Post Retrieved', page, size, post.totalData);
     } catch (error) {
@@ -18,10 +33,11 @@ postController.get = async (req, res, next) => {
 
 postController.getIsActive = async (req, res, next) => {
     try {
-        let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req, 10);
+        let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req);
         searchQuery = { is_active: true }
         sortQuery = { createdAt: -1 }
-        populate = [{ path: 'category', select: 'title' }]
+        size = 5
+        populate = [{ path: 'category', select: 'title' }, { path: 'user', select: 'name' }]
         let post = await otherHelper.getQuerySendResponse(postSchema, page, size, sortQuery, searchQuery, selectQuery, next, populate);
         return otherHelper.paginationSendResponse(res, httpStatus.OK, true, post.data, 'All Post Retrieved', page, size, post.totalData);
     } catch (error) {
@@ -31,14 +47,20 @@ postController.getIsActive = async (req, res, next) => {
 
 postController.save = async (req, res, next) => {
     try {
-        const post = req.body;
+        let post = req.body;
+        const user_id = req.user.user._id
         if (post && post._id) {
-            const update = await postSchema.findByIdAndUpdate(post._id, { $set: post }, { new: true });
+            const update = await postSchema.findByIdAndUpdate(post._id, { $set: post }, { new: true })
+                .then(t => t.populate('category', 'title').execPopulate())
+                .then(t => t.populate('user', 'name').execPopulate());
             return otherHelper.sendResponse(res, httpStatus.OK, true, update, null, 'Post Added', null);
         }
         else {
+            post.user = user_id
             const new_post = new postSchema(post);
-            const new_post_save = await new_post.save();
+            const new_post_save = await new_post.save()
+                .then(t => t.populate('category', 'title').execPopulate())
+                .then(t => t.populate('user', 'name').execPopulate());
             return otherHelper.sendResponse(res, httpStatus.OK, true, new_post_save, null, 'Post Updated', null);
         }
     }

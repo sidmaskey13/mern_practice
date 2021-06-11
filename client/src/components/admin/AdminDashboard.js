@@ -3,15 +3,17 @@ import { Button, Checkbox, Form } from 'semantic-ui-react'
 import { login } from "../../redux/auth/action";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
-import BloggerDashboard from '../Post/BloggerDashboard';
-import AdminDashboard from '../admin/AdminDashboard';
+import ListForm from '../Post/ListForm';
+import AdminListTable from './AdminPostTable';
 
 function Dashboard() {
-    const user = useSelector(state => state.auth.user)
-
     return (
         <div>
-            {user ? user.userType == 'admin' ? <AdminDashboard /> : <BloggerDashboard /> : ''}
+            <h1>Admin Dashboard</h1>
+            <ListForm />
+            <hr />
+            <AdminListTable />
+
         </div>
     )
 }

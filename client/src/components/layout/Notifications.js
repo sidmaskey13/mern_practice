@@ -1,37 +1,36 @@
+import React, { useEffect, useState } from 'react';
 import Noty from "noty";
-import { useSelector } from "react-redux";
 
-const showNotificationSuccess = (text) => {
-    new Noty({
-        type: "success",
-        layout: "topRight",
-        theme: "bootstrap-v4",
-        timeout: 2000,
-        text: text,
-        progressBar: false,
-    }).show()
-}
-const showNotificationError = (text) => {
-    new Noty({
-        type: "error",
-        layout: "topRight",
-        theme: "bootstrap-v4",
-        timeout: 1000,
-        text: text,
-        progressBar: false,
-    }).show()
-}
+import { useSelector } from "react-redux";
+import { ToastContainer, toast } from 'react-toastify';
+
 
 function Noti() {
-    const message = useSelector(state => state.notifications.message)
-    const type = useSelector(state => state.notifications.type)
+    const notifications = useSelector(state => state.notifications)
+
+    useEffect(() => {
+        if (notifications.message) {
+            if (notifications.type == 'success') {
+                toast.success(notifications.message);
+            }
+            else {
+                toast.error(notifications.message);
+            }
+        }
+
+    }, [notifications])
+
+
     return (
         <div>
-            {type == 'success' ?
-                <p>{message ? showNotificationSuccess(message) : ""}</p>
-                :
-                <p>{message ? showNotificationError(message) : ""}</p>
-            }
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+            />
         </div>
     )
 }

@@ -2,9 +2,9 @@
 
 import axios from 'axios'
 import {
-    loginSuccess, loginFail, logOutSuccess
+    loginSuccess, loginFail, logOutSuccess, registerSuccess, registerFail, loadUser
 } from './action'
-import { notificationError, notificationSuccess } from "../notification/action";
+import { notificationError, notificationSuccess, clearErrorMessage } from "../notification/action";
 
 import { SERVER_URL } from "../../App";
 
@@ -14,6 +14,17 @@ const config = {
     }
 };
 
+export const loadLoggedInUser = () => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/auth/load-user", tokenConfig(getState))
+        .then(res => {
+            dispatch(loadUser(res.data))
+        }
+        ).catch(err => {
+            console.log(err)
+            dispatch(notificationError(err.toString()))
+
+        })
+}
 
 export const login = (data) => (dispatch) => {
     const body = JSON.stringify(data);
@@ -24,6 +35,20 @@ export const login = (data) => (dispatch) => {
         }
     ).catch(err => {
         dispatch(loginFail())
+        dispatch(notificationError(err.response.data.message))
+    }
+    )
+};
+
+export const register = (data) => (dispatch) => {
+    const body = JSON.stringify(data);
+    axios.post(SERVER_URL + '/auth/register', body, config).then(
+        res => {
+            dispatch(registerSuccess(res.data));
+            dispatch(notificationSuccess('Register Successful'))
+        }
+    ).catch(err => {
+        dispatch(registerFail())
         dispatch(notificationError(err.response.data.message))
     }
     )

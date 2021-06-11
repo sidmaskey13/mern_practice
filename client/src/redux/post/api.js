@@ -12,8 +12,8 @@ const config = {
     }
 };
 
-export const fetchPosts = (page) => (dispatch, getState) => {
-    axios.get(SERVER_URL + "/post?page=" + page, tokenConfig(getState))
+export const fetchPostsOwn = (page) => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post/own/all?page=" + page, tokenConfig(getState))
         .then(res => {
             dispatch(fetchPostSuccess(res.data))
             dispatch(notificationSuccess(res.data.message))
@@ -26,8 +26,22 @@ export const fetchPosts = (page) => (dispatch, getState) => {
         })
 }
 
-export const fetchActivePosts = () => (dispatch, getState) => {
-    axios.get(SERVER_URL + "/post/homepage/active")
+export const fetchPostsAll = (page) => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post/all?page=" + page, tokenConfig(getState))
+        .then(res => {
+            dispatch(fetchPostSuccess(res.data))
+            dispatch(notificationSuccess(res.data.message))
+        }
+        ).catch(err => {
+            console.log(err)
+            dispatch(fetchPostError(err.toString()))
+            dispatch(notificationError(err.toString()))
+
+        })
+}
+
+export const fetchActivePosts = (page) => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post/homepage/active?page=" + page)
         .then(res => {
             dispatch(fetchActivePostSuccess(res.data))
             dispatch(notificationSuccess(res.data.message))

@@ -85,8 +85,9 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, singlePost: state.singlePost, currentIndex: action.payload }
 
         case GET_UPDATE_TABLE_SUCCESS:
-            state.postList.splice(state.currentIndex, 1)
-            return { ...state, postList: [action.payload, ...state.postList], currentIndex: -1 }
+            // state.postList.splice(state.currentIndex, 1)
+            state.postList[state.currentIndex] = action.payload
+            return { ...state, postList: state.postList, currentIndex: -1 }
 
 
 

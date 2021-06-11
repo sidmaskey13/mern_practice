@@ -14,6 +14,11 @@ const userSchema = new schema({
         type: String,
         required: 'Password is required'
     },
+    userType: {
+        type: String,
+        enum: ['blogger', 'admin'],
+        default: 'blogger'
+    },
 
 }, {
     timestamps: true

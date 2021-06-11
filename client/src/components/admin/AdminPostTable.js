@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Icon, Label, Menu, Table, List, Header, Button, Pagination } from 'semantic-ui-react'
 import { getUpdateIndexSuccess, deletePostSuccess } from '../../redux/post/action';
-import { fetchPostsOwn, deletePost } from '../../redux/post/api';
+import { fetchPostsAll, deletePost } from '../../redux/post/api';
 
 
-function ListTable() {
+function AdminListTable() {
     const posts = useSelector(state => state.posts.postList)
     const postIndex = useSelector(state => state.posts.currentIndex)
     const totalData = useSelector(state => state.posts.totalData)
@@ -25,7 +25,7 @@ function ListTable() {
     }
 
     useEffect(() => {
-        dispatch(fetchPostsOwn(currentPage));
+        dispatch(fetchPostsAll(currentPage));
     }, [])
 
     const margin5px = {
@@ -34,7 +34,7 @@ function ListTable() {
 
     const handlePaginationChange = (e, { activePage }) => {
         setCurrentPage(activePage)
-        dispatch(fetchPostsOwn(activePage))
+        dispatch(fetchPostsAll(activePage))
     };
 
     return (
@@ -52,6 +52,7 @@ function ListTable() {
                         <Table.HeaderCell>Category</Table.HeaderCell>
                         <Table.HeaderCell>Tags</Table.HeaderCell>
                         <Table.HeaderCell>Active</Table.HeaderCell>
+                        <Table.HeaderCell>User</Table.HeaderCell>
                         <Table.HeaderCell>Action</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
@@ -66,6 +67,7 @@ function ListTable() {
                             <Table.Cell>{post.category ? post.category.title : '-'}</Table.Cell>
                             <Table.Cell>{post.tags ? post.tags.map(i => <div style={margin5px} class="ui blue label">{i}</div>) : "-"}</Table.Cell>
                             <Table.Cell>{post.is_active ? post.is_active : '-'}</Table.Cell>
+                            <Table.Cell>{post.user ? post.user.name : '-'}</Table.Cell>
                             <Table.Cell>
                                 <div style={margin5px}><Button onClick={() => handleDelete(post._id)}>Delete</Button></div>
                                 <div style={margin5px}><Button onClick={() => handleEdit(index)}>Edit</Button></div>
@@ -79,4 +81,4 @@ function ListTable() {
 
 }
 
-export default ListTable;
+export default AdminListTable;

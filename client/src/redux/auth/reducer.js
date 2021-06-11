@@ -1,5 +1,5 @@
 import {
-    LOGIN_SUCCESS, LOGIN_FAIL, REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT_SUCCESS
+    LOGIN_SUCCESS, LOGIN_FAIL, REGISTER_SUCCESS, REGISTER_FAIL, LOGOUT_SUCCESS, USER_LOADED
 } from './types'
 
 let INITIAL_STATE = {
@@ -10,6 +10,7 @@ let INITIAL_STATE = {
 
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
+        case REGISTER_SUCCESS:
         case LOGIN_SUCCESS:
             localStorage.setItem('token', action.payload.token);
             return {
@@ -17,6 +18,11 @@ export default function (state = INITIAL_STATE, action) {
                 token: action.payload.token,
                 isAuthenticated: true,
                 user: action.payload
+            };
+        case USER_LOADED:
+            return {
+                ...state,
+                user: action.payload.data
             };
         case LOGOUT_SUCCESS:
             localStorage.removeItem('token')

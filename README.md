@@ -1,6 +1,8 @@
 This is a CRUD project using ReactJs with Redux Thunk as Frontend and Nodejs as Backend.
 It has all the necessary features like Authentication, Routes, Notifications.
 
+live site: https://blog-mern-practise.herokuapp.com/
+
 Steps to follow:
 
 1. Clone the repo.

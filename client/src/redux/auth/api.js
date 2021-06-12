@@ -1,5 +1,3 @@
-
-
 import axios from 'axios'
 import {
     loginSuccess, loginFail, logOutSuccess, registerSuccess, registerFail, loadUser

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Noty from "noty";
 
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from 'react-toastify';

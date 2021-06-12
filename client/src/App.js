@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
-import '../node_modules/noty/lib/noty.css'
-import '../node_modules/noty/lib/themes/bootstrap-v4.css'
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import PrivateRoute from './components/layout/PrivateRoute'
@@ -18,25 +16,18 @@ import PostList from './components/Post/BloggerDashboard';
 import Homepage from './components/layout/Homepage';
 import Footer from './components/layout/Footer';
 import { loadLoggedInUser } from "./redux/auth/api";
-import {
-  Checkbox,
-  Grid,
-  Header,
-  Icon,
-  Image,
-  Menu,
-  Segment,
-  Sidebar,
-} from 'semantic-ui-react'
+import AdminUsersTable from './components/admin/AdminUsersTable';
+
 
 export const SERVER_URL = "http://localhost:4000/api";
 
 function App() {
   const dispatch = useDispatch()
-  const [visible, setVisible] = useState(false)
+  const user = useSelector(state => state.auth.user)
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 
   useEffect(() => {
-    dispatch(loadLoggedInUser())
+    if (!user) if (isAuthenticated) dispatch(loadLoggedInUser())
   }, [])
 
   return (
@@ -49,6 +40,7 @@ function App() {
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <PrivateRoute exact path="/dashboard" component={Dashboard} />
+          <PrivateRoute exact path="/users" component={AdminUsersTable} />
         </Switch>
       </div>
       <Footer />

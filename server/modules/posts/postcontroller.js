@@ -35,6 +35,28 @@ postController.getIsActive = async (req, res, next) => {
     try {
         let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req);
         searchQuery = { is_active: true }
+        if (req.query.search) {
+            searchQuery = {
+                $or: [{
+                    title: {
+                        $regex: req.query.search,
+                        $options: 'i',
+                    }
+                }, {
+                    tags: {
+                        $regex: req.query.search,
+                        $options: 'i',
+                    },
+                }, {
+                    body: {
+                        $regex: req.query.search,
+                        $options: 'i',
+                    },
+                }],
+
+                ...searchQuery,
+            };
+        }
         sortQuery = { createdAt: -1 }
         size = 5
         populate = [{ path: 'category', select: 'title' }, { path: 'user', select: 'name' }]
@@ -85,6 +107,15 @@ postController.single = async (req, res, next) => {
         const id = req.params.id
         const post = await postSchema.findById(id)
         return otherHelper.sendResponse(res, httpStatus.OK, true, post, null, 'Post Single Retrieved', null);
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
+postController.test = async (req, res, next) => {
+    try {
+
     }
     catch (err) {
         next(err);

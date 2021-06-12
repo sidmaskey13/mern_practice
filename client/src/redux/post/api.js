@@ -6,12 +6,6 @@ import { tokenConfig } from "../auth/api";
 import { notificationError, notificationSuccess } from "../notification/action";
 import { SERVER_URL } from "../../App";
 
-const config = {
-    headers: {
-        'Content-Type': 'application/json'
-    }
-};
-
 export const fetchPostsOwn = (page) => (dispatch, getState) => {
     axios.get(SERVER_URL + "/post/own/all?page=" + page, tokenConfig(getState))
         .then(res => {
@@ -40,8 +34,8 @@ export const fetchPostsAll = (page) => (dispatch, getState) => {
         })
 }
 
-export const fetchActivePosts = (page) => (dispatch, getState) => {
-    axios.get(SERVER_URL + "/post/homepage/active?page=" + page)
+export const fetchActivePosts = (page, search) => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post/homepage/active?page=" + page + "&search=" + search)
         .then(res => {
             dispatch(fetchActivePostSuccess(res.data))
             dispatch(notificationSuccess(res.data.message))

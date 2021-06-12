@@ -16,7 +16,8 @@ let INITIAL_STATE = {
     currentIndex: -1,
     postList: [],
     singlePost: {},
-    totalData: 0
+    totalData: 0,
+    message: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -32,7 +33,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 postList: action.payload.data,
-                successMessage: action.message
+                totalData: action.payload.totalData,
             }
 
         case FETCH_POST_SUCCESS:
@@ -40,7 +41,6 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 postList: action.payload.data,
                 totalData: action.payload.totalData,
-                successMessage: action.message,
             }
 
         case FETCH_POST_ERROR:
@@ -55,17 +55,14 @@ export default function (state = INITIAL_STATE, action) {
                 currentIndex: -1
             }
 
+        case FETCH_POST_ERROR:
         case SAVE_POST_ERROR:
-            return {
-                ...state,
-                errorMessage: action.message
-            }
-
         case DELETE_POST_ERROR:
             return {
                 ...state,
-                errorMessage: action.message
+                message: action.message
             }
+
 
 
         case DELETE_POST_SUCCESS:

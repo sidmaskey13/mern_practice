@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const userSchema = require('./userSchema')
+const postSchema = require('../posts/postschema')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwtKey = process.env.JWT_PRIVATE_KEY
@@ -90,8 +91,37 @@ userController.googleLogin = async (req, res, next) => {
 
 userController.allUsers = async (req, res, next) => {
     try {
-        const users = await userSchema.find().select('name email userType').lean()
-        return otherHelper.sendResponse(res, httpStatus.OK, true, users, null, 'All Users Retrieved', null);
+        let { page, size, populate, selectQuery, searchQuery, sortQuery } = otherHelper.parseFilters(req);
+
+        selectQuery = { name: 1, email: 1, userType: 1 }
+        sortQuery = { createdAt: -1 }
+
+        let userPostsCount = await postSchema.aggregate([
+            {
+                $match: { is_active: "true" }
+            },
+            {
+                $group: {
+                    _id: '$user',
+                    total: { "$sum": 1 }
+                }
+            }
+        ])
+
+
+
+        let post = await otherHelper.getQuerySendResponse(userSchema, page, size, sortQuery, searchQuery, selectQuery, next, populate);
+
+        let data = post.data
+
+        for (let i = 0; i < data.length; i++) {
+            let totalCount = userPostsCount.find(x => JSON.stringify(x._id) == JSON.stringify(data[i]._id))
+            if (totalCount) {
+                data[i].totalPost = totalCount.total;
+            }
+        }
+
+        return otherHelper.paginationSendResponse(res, httpStatus.OK, true, data, 'All Post Retrieved', page, size, post.totalData);
     } catch (error) {
         next(error);
     }
@@ -99,19 +129,34 @@ userController.allUsers = async (req, res, next) => {
 
 userController.loadLoggedInUser = async (req, res, next) => {
     try {
-        const user_id = req.user.user._id
-        const user = await userSchema.findById(user_id).select('_id name email userType').lean()
+        const user = await checkLoggedInUserData(req)
         return otherHelper.sendResponse(res, httpStatus.OK, true, user, null, 'Login User detail', null);
     } catch (error) {
         next(error);
     }
 };
 
+userController.delete = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const user = await userSchema.findByIdAndDelete(id)
+        return otherHelper.sendResponse(res, httpStatus.OK, true, null, null, 'User Deleted', null);
+    }
+    catch (err) {
+        next(err);
+    }
+}
 
 
 function generateAuthToken() {
     const token = jwt.sign({ _id: this.id, email: this.email }, jwtKey);
     return token;
+}
+
+async function checkLoggedInUserData(req) {
+    const user_id = req.user.user._id
+    const user = await userSchema.findById(user_id).select('_id name email userType').lean()
+    return user
 }
 
 module.exports = userController;

@@ -6,8 +6,7 @@ import { logOut } from "../../redux/auth/api";
 
 
 function Header() {
-    const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
-    const user = useSelector(state => state.auth.user)
+    const { isAuthenticated, user } = useSelector(state => state.auth)
     const dispatch = useDispatch()
 
     const handleLogout = () => {
@@ -39,6 +38,13 @@ function Header() {
                         <a className="nav-link" href="">Dashboard</a>
                     </li>
                 </Link>
+                {user ? user.userType = 'admin' ?
+                    <Link to="/users">
+                        <li className="nav-item">
+                            <a className="nav-link" href="">Users</a>
+                        </li>
+                    </Link>
+                    : "" : ""}
             </ul>
             <ul className="navbar-nav my-2 ml-auto">
                 <span className="navbar-text mr-3">

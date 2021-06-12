@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const HttpStatus = require('http-status');
+const userSchema = require('../modules/user/userSchema')
+const otherHelper = require('../helper/other.helper');
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const jwtKey = process.env.JWT_PRIVATE_KEY;
@@ -42,8 +44,25 @@ authMiddleware.authentication = async (req, res, next) => {
         next()
     }
     catch (ex) {
-        res.status(400).send('Invalid Token')
+        return otherHelper.sendResponse(res, HttpStatus.UNAUTHORIZED, true, null, null, 'Invalid Token', null);
     }
 }
 
+authMiddleware.admin = async (req, res, next) => {
+    try {
+        const user_id = req.user.user._id
+        const user = await userSchema.findById(user_id).select('userType').lean()
+        if (user.userType == 'admin') {
+            next()
+        }
+        else {
+            return otherHelper.sendResponse(res, HttpStatus.UNAUTHORIZED, true, null, null, 'Permission only for Admin', null);
+        }
+
+    }
+    catch (ex) {
+        console.log(ex)
+        res.status(400).send('Error')
+    }
+}
 module.exports = authMiddleware;

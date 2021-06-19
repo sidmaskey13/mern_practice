@@ -20,6 +20,7 @@ import AdminUsersTable from './components/admin/AdminUsersTable';
 
 
 export const SERVER_URL = "http://localhost:4000/api";
+// export const SERVER_URL = "https://mern-blog-node-server.herokuapp.com/api";
 
 function App() {
   const dispatch = useDispatch()

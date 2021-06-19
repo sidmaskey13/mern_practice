@@ -9,7 +9,7 @@ import {
     GET_UPDATE_INDEX_SUCCESS,
     GET_UPDATE_TABLE_SUCCESS,
     CLEAR_POST,
-    FETCH_POST_ACTIVE_SUCCESS
+    FETCH_POST_ACTIVE_SUCCESS, SEND_LIKES_DATA,
 } from './types'
 
 let INITIAL_STATE = {
@@ -85,6 +85,11 @@ export default function (state = INITIAL_STATE, action) {
             // state.postList.splice(state.currentIndex, 1)
             state.postList[state.currentIndex] = action.payload
             return { ...state, postList: state.postList, currentIndex: -1 }
+
+        case SEND_LIKES_DATA:
+            console.log(action.payload.data)
+            state.postList[action.index] = action.payload.data
+            return { ...state, postList: state.postList }
 
 
 

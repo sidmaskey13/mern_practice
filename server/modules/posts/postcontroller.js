@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const postSchema = require('./postschema')
 const otherHelper = require('../../helper/other.helper');
-
+const { post } = require('../../routes/post');
 const postController = {};
 
 postController.getAll = async (req, res, next) => {
@@ -113,9 +113,30 @@ postController.single = async (req, res, next) => {
     }
 }
 
-postController.test = async (req, res, next) => {
+postController.handleLikes = async (req, res, next) => {
     try {
+        const post_id = req.params.id
+        const user_id = req.user.user._id
+        let postData = await postSchema.findOne({ _id: post_id })
 
+        if (postData) if (postData.likes) {
+            var index = postData.likes.indexOf(user_id);
+            if (index !== -1) {
+                postData.likes.splice(index, 1);
+                postData.save()
+                return otherHelper.sendResponse(res, httpStatus.OK, true, postData, null, 'Post Updated', null);
+            }
+            else {
+                postData.likes.push(user_id)
+                postData.save()
+                return otherHelper.sendResponse(res, httpStatus.OK, true, postData, null, 'Post Updated', null);
+            }
+        }
+        else {
+            postData.likes = [user_id]
+            postData.save()
+            return otherHelper.sendResponse(res, httpStatus.OK, true, postData, null, 'Post Updated', null);
+        }
     }
     catch (err) {
         next(err);

@@ -1,4 +1,4 @@
-import { fetchPostSuccess, fetchPostError, savePostSuccess, savePostError, deletePostSuccess, deletePostError, updateTableSuccess, fetchActivePostSuccess } from './action'
+import { fetchPostSuccess, fetchPostError, savePostSuccess, savePostError, deletePostSuccess, deletePostError, updateTableSuccess, fetchActivePostSuccess, updatePostAfterLike } from './action'
 
 import axios from 'axios';
 import { tokenConfig } from "../auth/api";
@@ -75,6 +75,18 @@ export const deletePost = (id) => (dispatch, getState) => {
     axios.delete(SERVER_URL + "/post" + '/' + id, tokenConfig(getState))
         .then(res => {
             dispatch(deletePostSuccess(id))
+            dispatch(notificationSuccess(res.data.message))
+        }
+        ).catch(err => {
+            dispatch(deletePostError(err.toString()));
+            dispatch(notificationError(err.toString()))
+        })
+};
+
+export const sendLikeData = (post_id, index) => (dispatch, getState) => {
+    axios.get(SERVER_URL + "/post/likes/" + post_id, tokenConfig(getState))
+        .then(res => {
+            dispatch(updatePostAfterLike(res.data, index))
             dispatch(notificationSuccess(res.data.message))
         }
         ).catch(err => {

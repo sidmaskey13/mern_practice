@@ -1,6 +1,14 @@
-import { FETCH_POST_SUCCESS, FETCH_POST_ERROR, SAVE_POST_SUCCESS, SAVE_POST_ERROR, DELETE_POST_SUCCESS, UPDATE_POST_SUCCESS, GET_UPDATE_INDEX_SUCCESS, GET_UPDATE_TABLE_SUCCESS, DELETE_POST_ERROR, CLEAR_POST, FETCH_POST_ACTIVE_SUCCESS } from './types'
+import { FETCH_POST_SUCCESS, FETCH_POST_ERROR, SAVE_POST_SUCCESS, SAVE_POST_ERROR, DELETE_POST_SUCCESS, UPDATE_POST_SUCCESS, GET_UPDATE_INDEX_SUCCESS, GET_UPDATE_TABLE_SUCCESS, DELETE_POST_ERROR, CLEAR_POST, FETCH_POST_ACTIVE_SUCCESS, SEND_LIKES_DATA } from './types'
 
-export const clearPostForm = () => {
+export const updatePostAfterLike = (response, index) => {
+    return {
+        type: SEND_LIKES_DATA,
+        payload: response,
+        index: index
+    }
+}
+
+export const clearPostForm = (response) => {
     return {
         type: CLEAR_POST
     }
